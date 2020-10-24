@@ -13,14 +13,12 @@ public class TaskListServer {
         while (true) {
             Socket client = null;
             try {
-                client = skServer.accept(); //Server accepts the connection with the client
+                client = skServer.accept();
                 System.out.println("A new client is connected: " + client);
                 DataOutputStream out = new DataOutputStream(client.getOutputStream());
                 DataInputStream in = new DataInputStream(client.getInputStream());
-                //Assigning new thread for this client
-                Thread newThread = new ClientHandler(client, in, out);
+                Thread newThread = new ClientHandler(client, in, out, tasks);
                 newThread.start();
-
             } catch (IOException e) {
                 client.close();
                 e.printStackTrace();
@@ -33,30 +31,32 @@ class ClientHandler extends Thread {
     DataInputStream dataIn;
     DataOutputStream dataOut;
     Socket socket;
+    ArrayList<String> tasks;
 
-    public ClientHandler(Socket socket, DataInputStream dataIn, DataOutputStream dataOut) {
+    public ClientHandler(Socket socket, DataInputStream dataIn, DataOutputStream dataOut, ArrayList<String> tasks) {
         this.socket = socket;
         this.dataIn = dataIn;
         this.dataOut = dataOut;
+        this.tasks = tasks;
     }
 
     @Override
     public void run (){
         String clientMessage = null;
-        ArrayList<String> tasks = new ArrayList();
 
         while(true){
             try{
                 clientMessage = dataIn.readUTF();
                 switch (clientMessage){
                     case "L":
-                        String showList = Arrays.toString(tasks.toArray());
+                        //String showList = Arrays.toString(tasks.toArray());
+                        String showList = Arrays.toString(this.tasks.toArray());
                         dataOut.writeUTF(showList);
                         break;
                     case "R":
                         String newTask = dataIn.readUTF();
                         if (newTask.length() <= 120){
-                            tasks.add(newTask);
+                            this.tasks.add(newTask);
                             dataOut.writeUTF("Task added succesfully");
                         } else {
                             dataOut.writeUTF("Caracters cannot be over than 120");
@@ -70,13 +70,10 @@ class ClientHandler extends Thread {
                     default:
                         dataOut.writeUTF("This option is not valid");
                 }
-
             } catch (IOException e) {
                 e.printStackTrace();
-
             }
-            if (clientMessage.equals("Q")){ //Needed to quit the while loop and finish without exceptions erros
-                //System.out.println("Server is closed");
+            if (clientMessage.equals("Q")){
                 break;
             }
         }
