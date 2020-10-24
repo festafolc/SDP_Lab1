@@ -41,7 +41,7 @@ public class TaskListClient {
                     String serverMessage = dataIn.readUTF();
                     System.out.println(serverMessage);
                 } else {
-                    break; //Needed to quit the while loop and finish without exceptions erros
+                    break;
                 }
             }
         } catch (IOException e) {

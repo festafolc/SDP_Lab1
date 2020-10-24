@@ -8,19 +8,19 @@ import java.util.Arrays;
 public class TaskListServer {
     public static void main(String[] args) throws IOException {
         ArrayList<String> tasks = new ArrayList();
-        FileWriter txt = new FileWriter("/home/carlos/Documents/output.txt");
+        File doc = new File("/home/carlos/Documents/output.txt");
+        FileWriter txt = new FileWriter(doc, true);
         ServerSocket skServer = new ServerSocket(5000);
 
         while (true) {
-            Socket client = null;
+            Socket client;
             try {
                 client = skServer.accept();
                 DataOutputStream out = new DataOutputStream(client.getOutputStream());
                 DataInputStream in = new DataInputStream(client.getInputStream());
-                Thread newThread = new ClientHandler(client, in, out, tasks, txt);
+                Thread newThread = new ClientHandler(client, in, out, tasks, doc, txt);
                 newThread.start();
             } catch (IOException e) {
-                client.close();
                 e.printStackTrace();
             }
         }
@@ -30,15 +30,17 @@ public class TaskListServer {
 class ClientHandler extends Thread {
     DataInputStream dataIn;
     DataOutputStream dataOut;
-    Socket socket;
+    Socket client;
     ArrayList<String> tasks;
+    File doc;
     FileWriter txt;
 
-    public ClientHandler(Socket socket, DataInputStream dataIn, DataOutputStream dataOut, ArrayList<String> tasks, FileWriter txt) {
-        this.socket = socket;
+    public ClientHandler(Socket client, DataInputStream dataIn, DataOutputStream dataOut, ArrayList<String> tasks, File doc, FileWriter txt) {
+        this.client = client;
         this.dataIn = dataIn;
         this.dataOut = dataOut;
         this.tasks = tasks;
+        this.doc = doc;
         this.txt = txt;
     }
 
@@ -68,7 +70,7 @@ class ClientHandler extends Thread {
                         this.txt.close();
                         this.dataOut.close();
                         this.dataIn.close();
-                        this.socket.close();
+                        this.client.close();
                         break;
                     default:
                         dataOut.writeUTF("This option is not valid");
