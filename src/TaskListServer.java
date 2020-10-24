@@ -15,7 +15,6 @@ public class TaskListServer {
             Socket client = null;
             try {
                 client = skServer.accept();
-                //System.out.println("A new client is connected: " + client);
                 DataOutputStream out = new DataOutputStream(client.getOutputStream());
                 DataInputStream in = new DataInputStream(client.getInputStream());
                 Thread newThread = new ClientHandler(client, in, out, tasks, txt);
@@ -52,7 +51,6 @@ class ClientHandler extends Thread {
                 clientMessage = dataIn.readUTF();
                 switch (clientMessage){
                     case "L":
-                        //String showList = Arrays.toString(tasks.toArray());
                         String showList = Arrays.toString(this.tasks.toArray());
                         dataOut.writeUTF(showList);
                         break;
