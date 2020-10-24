@@ -8,8 +8,7 @@ import java.util.Arrays;
 public class TaskListServer {
     public static void main(String[] args) throws IOException {
         ArrayList<String> tasks = new ArrayList();
-        File doc = new File("output.txt");
-        FileWriter txt = new FileWriter(doc, true);
+        FileWriter txt = new FileWriter("output.txt", true);
         ServerSocket skServer = new ServerSocket(5000);
 
         while (true) {
@@ -18,7 +17,7 @@ public class TaskListServer {
                 client = skServer.accept();
                 DataOutputStream out = new DataOutputStream(client.getOutputStream());
                 DataInputStream in = new DataInputStream(client.getInputStream());
-                Thread newThread = new ClientHandler(client, in, out, tasks, doc, txt);
+                Thread newThread = new ClientHandler(client, in, out, tasks, txt);
                 newThread.start();
             } catch (IOException e) {
                 e.printStackTrace();
@@ -32,15 +31,13 @@ class ClientHandler extends Thread {
     DataOutputStream dataOut;
     Socket client;
     ArrayList<String> tasks;
-    File doc;
     FileWriter txt;
 
-    public ClientHandler(Socket client, DataInputStream dataIn, DataOutputStream dataOut, ArrayList<String> tasks, File doc, FileWriter txt) {
+    public ClientHandler(Socket client, DataInputStream dataIn, DataOutputStream dataOut, ArrayList<String> tasks, FileWriter txt) {
         this.client = client;
         this.dataIn = dataIn;
         this.dataOut = dataOut;
         this.tasks = tasks;
-        this.doc = doc;
         this.txt = txt;
     }
 
