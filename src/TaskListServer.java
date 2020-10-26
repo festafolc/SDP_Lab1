@@ -22,7 +22,7 @@ public class TaskListServer {
             } catch (IOException e) {
                 e.printStackTrace();
             }
-            if (client == null) { // A ideia era fechar o servidor após todos os clientes fecharem,
+            if (client == null) { // A ideia era fechar o servidor após o último cliente fazer "Q" e fechar
                 skServer.close(); // mas o programa está em estado bloqueante na linha 17.
                 break;
             }
