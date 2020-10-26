@@ -10,17 +10,23 @@ public class TaskListServer {
         ArrayList<String> tasks = new ArrayList();
         FileWriter txt = new FileWriter("output.txt", true);
         ServerSocket skServer = new ServerSocket(5000);
+        Socket client = null;
 
         while (true) {
-            Socket client;
-            try {
-                client = skServer.accept();
-                DataOutputStream out = new DataOutputStream(client.getOutputStream());
-                DataInputStream in = new DataInputStream(client.getInputStream());
-                Thread newThread = new ClientHandler(client, in, out, tasks, txt);
-                newThread.start();
-            } catch (IOException e) {
-                e.printStackTrace();
+            if (client == null && clientMessage.equals("Q")) { // A ideia era fechar o servidor após todos os clientes fecharem,
+                // mas o programa está em estado bloqueante na linha 17.
+                skServer.close();
+                break;
+            } else {
+                try {
+                    client = skServer.accept();
+                    DataOutputStream out = new DataOutputStream(client.getOutputStream());
+                    DataInputStream in = new DataInputStream(client.getInputStream());
+                    Thread newThread = new ClientHandler(client, in, out, tasks, txt);
+                    newThread.start();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
             }
         }
     }
@@ -59,6 +65,7 @@ class ClientHandler extends Thread {
                             this.tasks.add(newTask);
                             this.txt.write(newTask);
                             dataOut.writeUTF("Task added succesfully");
+
                         } else {
                             dataOut.writeUTF("Caracters cannot be over than 120");
                         }
