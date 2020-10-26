@@ -63,7 +63,6 @@ class ClientHandler extends Thread {
                             this.tasks.add(newTask);
                             this.txt.write(newTask);
                             dataOut.writeUTF("Task added succesfully");
-
                         } else {
                             dataOut.writeUTF("Caracters cannot be over than 120");
                         }
