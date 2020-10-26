@@ -8,7 +8,7 @@ import java.util.Arrays;
 public class TaskListServer {
     public static void main(String[] args) throws IOException {
         ArrayList<String> tasks = new ArrayList();
-        FileWriter txt = new FileWriter("output.txt", true);
+        FileWriter txt = new FileWriter("Output.txt", true);
         ServerSocket skServer = new ServerSocket(5000);
         Socket client = null;
 
