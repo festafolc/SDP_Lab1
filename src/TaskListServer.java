@@ -13,20 +13,18 @@ public class TaskListServer {
         Socket client = null;
 
         while (true) {
-            if (client == null && clientMessage.equals("Q")) { // A ideia era fechar o servidor após todos os clientes fecharem,
-                // mas o programa está em estado bloqueante na linha 17.
-                skServer.close();
+            try {
+                client = skServer.accept();
+                DataOutputStream out = new DataOutputStream(client.getOutputStream());
+                DataInputStream in = new DataInputStream(client.getInputStream());
+                Thread newThread = new ClientHandler(client, in, out, tasks, txt);
+                newThread.start();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            if (client == null) { // A ideia era fechar o servidor após todos os clientes fecharem,
+                skServer.close(); // mas o programa está em estado bloqueante na linha 17.
                 break;
-            } else {
-                try {
-                    client = skServer.accept();
-                    DataOutputStream out = new DataOutputStream(client.getOutputStream());
-                    DataInputStream in = new DataInputStream(client.getInputStream());
-                    Thread newThread = new ClientHandler(client, in, out, tasks, txt);
-                    newThread.start();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
             }
         }
     }
